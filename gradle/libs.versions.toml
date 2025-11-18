@@ -1,0 +1,10 @@
+[versions]
+toolkit = "2.64.+"
+
+[plugins]
+toolkit   = { id = "dev.deftu.gradle.tools", version.ref = "toolkit" }
+loom      = { id = "dev.deftu.gradle.tools.minecraft.loom", version.ref = "toolkit" }
+bloom     = { id = "dev.deftu.gradle.tools.bloom", version.ref = "toolkit" }
+shadow    = { id = "dev.deftu.gradle.tools.shadow", version.ref = "toolkit" }
+resources = { id = "dev.deftu.gradle.tools.resources", version.ref = "toolkit" }
+

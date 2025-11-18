@@ -1,0 +1,9 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.7",
+  "package": "org.codeberg.libremc.vignettetweaks.mixins",
+  "refmap": "mixins.${mod_id}.refmap.json",
+  "client": [
+    "MixinGuiIngame"
+  ]
+}
