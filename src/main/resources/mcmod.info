@@ -11,7 +11,7 @@
       "LibreMC", "Asper"
     ],
     "credits": "",
-    "logoFile": "",
+    "logoFile": "assets/${mod_id}/logo.png",
     "screenshots": [],
     "dependencies": [
       "oneconfig"
