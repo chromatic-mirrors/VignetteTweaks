@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "org.codeberg.chromatic.vignettetweaks.mixin",
+  "compatibilityLevel": "${java}",
+  "client": [
+    "MixinGui"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

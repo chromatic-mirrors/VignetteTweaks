@@ -1,21 +1,15 @@
 ## Vignette Tweaks
 
-A mod that allows you to customize vignette. Inspired by [CheatBreaker](https://cheatbreaker.net).
+Makes Vignette by adding customization to the default vignette and adding status indicators.
 
 ---
 
-## Features
-- Types: Static & Amplified
-- Static allows you to set a static opacity.
-- Amplified allows you to change the amplification of the vanilla effect.
-
-## Config
-Vignette Tweaks utilizes OneConfig
-
-![static_config.png](assets/static_config.png)
-
-![amplified_config.png](assets/amplified_config.png)
+### Features
+- Customizable
+  - Visual Strength, colors, and conditions.
+- Status indicators
+  - Visual feedback for health, hunger, air, and totems.
 
 ---
 
-[license](LICENSE), [modrinth](https://modrinth.com/mod/vignette-tweaks), [codeberg](https://codeberg.org/LibreMC/VignetteTweaks)
+###### Code licensed under GPL 3.0.
