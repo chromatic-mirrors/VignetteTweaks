@@ -1,7 +1,7 @@
 mod.id = "vignettetweaks"
 mod.name = "VignetteTweaks"
 mod.group = "org.codeberg.chromatic"
-mod.version = "2.0.0-alpha.1"
+mod.version = "2.0.0-alpha.2"
 
 publish.modrinth = "SIRG6coC"
 
