@@ -16,7 +16,7 @@ public class VignetteConfig extends Config {
             title = "Type",
             options = { "Static", "Amplified" }
     )
-    public static int type = 0;
+    public static int type = 1;
 
     @Slider(
             title = "Strength",
@@ -82,7 +82,7 @@ public class VignetteConfig extends Config {
     @Accordion(title = "Air", subcategory = "Status")
     public static class Air {
         @Include
-        public static boolean enabled = true;
+        public static boolean enabled = false;
 
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFF142D5E);
@@ -110,7 +110,7 @@ public class VignetteConfig extends Config {
     @Accordion(title = "Hunger", subcategory = "Status")
     public static class Hunger {
         @Include
-        public static boolean enabled = true;
+        public static boolean enabled = false;
 
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFF587653);
@@ -138,7 +138,7 @@ public class VignetteConfig extends Config {
     @Accordion(title = "Health", subcategory = "Status")
     public static class Health {
         @Include
-        public static boolean enabled = true;
+        public static boolean enabled = false;
 
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFFBB1313);
