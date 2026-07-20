@@ -2,9 +2,9 @@ package org.codeberg.chromatic.vignettetweaks.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import org.codeberg.chromatic.vignettetweaks.config.VignetteConfig;
-import org.codeberg.chromatic.vignettetweaks.data.VignetteResult;
 import org.codeberg.chromatic.vignettetweaks.util.ColorUtil;
+import org.codeberg.chromatic.vignettetweaks.config.VignetteConfig;
+import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

@@ -2,21 +2,22 @@ plugins {
     id("dev.kikugie.stonecutter")
 }
 
-stonecutter active "26.2"
+stonecutter active "26.2" /* DO NOT EDIT */
 
 stonecutter parameters {
+    swaps["mod_id"] = "\"${property("mod.id")}\";"
+    swaps["mod_name"] = "\"${property("mod.name")}\";"
     swaps["mod_version"] = "\"${property("mod.version")}\";"
     swaps["minecraft"] = "\"${node.metadata.version}\";"
-    constants["release"] = property("mod.id") != "template"
     dependencies["fapi"] = node.project.property("deps.fabric_api") as String
 
     replacements {
         string(current.parsed >= "1.21.11") {
             replace("ResourceLocation", "Identifier")
         }
-    }
-}
 
-stonecutter tasks {
-    order("publishModrinth")
+        string(current.parsed >= "26.1") {
+            replace("classTweaker v2 named", "classTweaker v2 official")
+        }
+    }
 }

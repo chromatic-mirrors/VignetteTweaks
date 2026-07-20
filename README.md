@@ -1,6 +1,6 @@
 ## Vignette Tweaks
 
-Makes Vignette by adding customization to the default vignette and adding status indicators.
+Makes Vignette helpful   by adding customization to the default vignette and adding status indicators.
 
 ---
 

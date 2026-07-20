@@ -1,17 +1,14 @@
 plugins {
     id("dev.kikugie.loom-back-compat")
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
 
-version = "${property("mod.version")}+mc${sc.current.version}"
+version = "${property("mod.version")}+${sc.current.version}"
 base.archivesName = property("mod.id") as String
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
-    sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
-    sc.current.parsed >= "1.18" -> JavaVersion.VERSION_17
-    sc.current.parsed >= "1.17" -> JavaVersion.VERSION_16
-    else -> JavaVersion.VERSION_1_8
+    else -> JavaVersion.VERSION_21
 }
 
 repositories {
@@ -19,35 +16,33 @@ repositories {
         forRepository { maven(url) { name = alias } }
         filter { groups.forEach(::includeGroup) }
     }
+
+    fun strictMaven(repos: List<String>, vararg groups: String) = exclusiveContent {
+        repos.forEach { forRepository { maven(it) } }
+        filter { groups.forEach(::includeGroup) }
+    }
+
     strictMaven("https://www.cursemaven.com", "CurseForge", "curse.maven")
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
 
-    maven(url = "https://central.sonatype.com/repository/maven-snapshots/") {
-        name = "central-snapshots"
-        mavenContent { snapshotsOnly() }
-    }
-    mavenCentral()
+    strictMaven("https://repo.polyfrost.org/releases", "Polyfrost Releases", "org.polyfrost.oneconfig", "org.jetbrains.skiko")
+    strictMaven("https://repo.polyfrost.org/snapshots", "Polyfrost Snapshots", "org.polyfrost")
+    strictMaven("https://maven.google.com/", "androidx.savedstate")
+    strictMaven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1", "DevAuth", "me.djtheredstoner")
+    strictMaven("https://maven.bawnorton.com/releases", "MixinSquared", "com.github.bawnorton.mixinsquared")
+    strictMaven("https://repo.hypixel.net/repository/Hypixel/", "Hypixel", "net.hypixel")
+    strictMaven("https://maven.terraformersmc.com/releases", "Terraformers", "com.terraformersmc")
+    strictMaven(listOf("https://repo1.maven.org/maven2/", "https://central.sonatype.com/repository/maven-snapshots/"), "net.kyori")
 
-    maven("https://repo.polyfrost.org/releases")
-    maven("https://repo.polyfrost.org/snapshots")
-    maven("https://maven.fabricmc.net/releases")
-    maven("https://redirector.kotlinlang.org/maven/compose-dev")
-    google()
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${sc.current.version}")
     loomx.applyMojangMappings()
 
-    fun ocfg(vararg modules: String) {
-        for (it in modules) modImplementation("org.polyfrost.oneconfig:${it}:${property("deps.oneconfig") as String}")
-    }
-
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
 
-    ocfg("${sc.current.version}-fabric", "commands", "config", "config-impl", "events", "internal", "ui", "utils", "hud")
-
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties["deps.fabric_api"] as String}")
+    modImplementation("org.polyfrost.oneconfig:${sc.current.version}-fabric:${property("deps.oneconfig")}")
 }
 
 loom {
@@ -58,8 +53,10 @@ loom {
     }
 
     runConfigs.all {
+        preferGradleTask = true
+        generateRunConfig = true
+        runDirectory = rootProject.file("run")
         jvmArguments.add("-Dmixin.debug.export=true")
-        runDirectory.set(File("../../run"))
     }
 }
 
@@ -73,7 +70,26 @@ java {
     }
 }
 
+sourceSets {
+    val ducks = create("ducks") {
+        compileClasspath += sourceSets["main"].compileClasspath
+    }
+
+    main {
+        compileClasspath += ducks.output
+    }
+}
+
 tasks {
+    jar {
+        val projectName = project.name
+        inputs.property("projectName", projectName)
+
+        from("LICENSE") {
+            rename { "${it}_${projectName}" }
+        }
+    }
+
     processResources {
         fun MutableMap<String, String>.register(key: String, property: String) {
             val value: String = sc.properties[property]
@@ -95,37 +111,46 @@ tasks {
     }
 
     register<Copy>("buildAndCollect") {
-        description = "Build & Collect"
         group = "build"
+        description = "Builds mod jars and copies results to `build/libs/{mod version}/`"
 
-        from(loomx.modJar.map { it.archiveFile }, loomx.modSourcesJar.map { it.archiveFile })
+        inputs.property("version", project.property("mod.version"))
+        from(loomx.modJar.flatMap { it.archiveFile }, loomx.modSourcesJar.flatMap { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
-        dependsOn("build")
     }
 }
 
 publishMods {
-    file = loomx.modJar.get().archiveFile
-    changelog = project.rootProject.file("CHANGELOG.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
-
-    val projectVersion = project.version.toString().lowercase()
-    type = when {
-        "beta" in projectVersion -> BETA
-        "alpha" in projectVersion -> ALPHA
-        else -> STABLE
-    }
-
-    modLoaders.add("fabric")
-
     val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
         ?.asList().orEmpty().map { it.toString() }
 
+    val modrinthToken = listOf(
+        "oneconfig.publish.modrinth.token",
+        "publish.modrinth.token",
+        "modrinth.token"
+    ).firstNotNullOfOrNull { findProperty(it)?.toString()?.takeIf(String::isNotBlank) }
+
+    val changelogText = rootProject.file("CHANGELOG.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
+
+    file = loomx.modJar.get().archiveFile
+    changelog.set(changelogText)
+
+    type.set(
+        when (version.toString()) {
+            in "beta" -> BETA
+            in "alpha" -> ALPHA
+            else -> STABLE
+        }
+    )
+
+    modLoaders.add("fabric")
+
     modrinth {
         projectId = property("publish.modrinth").toString()
-        accessToken = findProperty("modrinth.token").toString()
-
+        accessToken = modrinthToken
         minecraftVersions.addAll(compatibleVersions)
 
         requires("oneconfig")
+        requires("fabric-api")
     }
 }

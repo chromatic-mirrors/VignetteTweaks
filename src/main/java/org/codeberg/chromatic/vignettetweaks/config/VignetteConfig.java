@@ -2,7 +2,8 @@ package org.codeberg.chromatic.vignettetweaks.config;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
-import org.codeberg.chromatic.vignettetweaks.data.VignetteResult;
+import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
+import org.codeberg.chromatic.vignettetweaks.VignetteTweaks;
 import org.codeberg.chromatic.vignettetweaks.util.ColorUtil;
 import org.polyfrost.compose.render.PolyColor;
 import org.polyfrost.oneconfig.api.config.v1.Config;
@@ -19,20 +20,17 @@ public class VignetteConfig extends Config {
     public static int type = 1;
 
     @Slider(
-            title = "Strength",
-            step = 1.0f
+            title = "Strength"
     )
     public static int strength = 50;
 
     @Slider(
-            title = "Minimum Strength",
-            step = 1.0f
+            title = "Minimum Strength"
     )
     public static float minimumStrength = 0f;
 
     @Slider(
-            title = "Maximum Strength",
-            step = 1.0f
+            title = "Maximum Strength"
     )
     public static float maximumStrength = 100f;
 
@@ -47,18 +45,20 @@ public class VignetteConfig extends Config {
         @Include
         public static boolean enabled = false;
 
+        @DependsOn("Totem.enabled")
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFFA05B23);
 
+        @DependsOn("Totem.enabled")
         @Dropdown(
                 title = "Condition",
                 options = { "Offhand", "Main hand", "Both" }
         )
         public static int condition = 2;
 
+        @DependsOn("Totem.enabled")
         @Slider(
-                title = "Strength",
-                step = 1.0f
+                title = "Strength"
         )
         public static int strength = 50;
 
@@ -84,26 +84,25 @@ public class VignetteConfig extends Config {
         @Include
         public static boolean enabled = false;
 
+        @DependsOn("Air.enabled")
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFF142D5E);
 
-        @Slider(title = "Threshold", step = 1.0F)
+        @DependsOn("Air.enabled")
+        @Slider(title = "Threshold")
         public static int threshold = 50;
 
-        @Slider(title = "Minimum Strength", step = 1.0F)
+        @DependsOn("Air.enabled")
+        @Slider(title = "Minimum Strength")
         public static int minimumStrength = 0;
 
-        @Slider(title = "Maximum Strength", step = 1.0F)
+        @DependsOn("Air.enabled")
+        @Slider(title = "Maximum Strength")
         public static int maximumStrength = 100;
 
         public static VignetteResult evaluate(Player player) {
             float percent = (player.getAirSupply() / (float) player.getMaxAirSupply()) * 100f;
-
-            if (!enabled || percent > threshold) return null;
-
-            float strength = ColorUtil.scale(percent, threshold, minimumStrength, maximumStrength);
-
-            return new VignetteResult(color, strength);
+            return scaled(enabled, color, percent, threshold, minimumStrength, maximumStrength);
         }
     }
 
@@ -112,26 +111,25 @@ public class VignetteConfig extends Config {
         @Include
         public static boolean enabled = false;
 
+        @DependsOn("Hunger.enabled")
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFF587653);
 
-        @Slider(title = "Threshold", step = 1.0F)
+        @DependsOn("Hunger.enabled")
+        @Slider(title = "Threshold")
         public static int threshold = 50;
 
-        @Slider(title = "Minimum Strength", step = 1.0F)
+        @DependsOn("Hunger.enabled")
+        @Slider(title = "Minimum Strength")
         public static int minimumStrength = 0;
 
-        @Slider(title = "Maximum Strength", step = 1.0F)
+        @DependsOn("Hunger.enabled")
+        @Slider(title = "Maximum Strength")
         public static int maximumStrength = 100;
 
         public static VignetteResult evaluate(Player player) {
             float percent = (player.getFoodData().getFoodLevel() / 20f) * 100f;
-
-            if (!enabled || percent > threshold) return null;
-
-            float strength = ColorUtil.scale(percent, threshold, minimumStrength, maximumStrength);
-
-            return new VignetteResult(color, strength);
+            return scaled(enabled, color, percent, threshold, minimumStrength, maximumStrength);
         }
     }
 
@@ -140,55 +138,41 @@ public class VignetteConfig extends Config {
         @Include
         public static boolean enabled = false;
 
+        @DependsOn("Health.enabled")
         @Color(title = "Color", alpha = false)
         public static PolyColor color = new PolyColor(0xFFBB1313);
 
-        @Slider(title = "Threshold", step = 1.0F)
+        @DependsOn("Health.enabled")
+        @Slider(title = "Threshold")
         public static int threshold = 50;
 
-        @Slider(title = "Minimum Strength", step = 1.0F)
+        @DependsOn("Health.enabled")
+        @Slider(title = "Minimum Strength")
         public static int minimumStrength = 0;
 
-        @Slider(title = "Maximum Strength", step = 1.0F)
+        @DependsOn("Health.enabled")
+        @Slider(title = "Maximum Strength")
         public static int maximumStrength = 100;
 
         public static VignetteResult evaluate(Player player) {
             float percent = (player.getHealth() / player.getMaxHealth()) * 100f;
-
-            if (!enabled || percent > threshold) return null;
-
-            float strength = ColorUtil.scale(percent, threshold, minimumStrength, maximumStrength);
-
-            return new VignetteResult(color, strength);
+            return scaled(enabled, color, percent, threshold, minimumStrength, maximumStrength);
         }
     }
 
+    private static VignetteResult scaled(boolean enabled, PolyColor color, float percent,
+                                         float threshold, float min, float max) {
+        if (!enabled || percent > threshold) return null;
+        return new VignetteResult(color, ColorUtil.scale(percent, threshold, min, max));
+    }
+
     private VignetteConfig() {
-        super("vignettetweaks.json", "Vignette Tweaks", Category.QOL);
+        super(VignetteTweaks.ID + ".json", VignetteTweaks.ICON, VignetteTweaks.NAME, Category.VISUALS);
 
         hideIf("strength", () -> type == 1);
 
         hideIf("minimumStrength", () -> type != 1);
         hideIf("maximumStrength", () -> type != 1);
         hideIf("strengthMultiplier", () -> type != 1);
-
-        addDependency("Health.color", "Health.enabled");
-        addDependency("Health.threshold", "Health.enabled");
-        addDependency("Health.minimumStrength", "Health.enabled");
-        addDependency("Health.maximumStrength", "Health.enabled");
-
-        addDependency("Hunger.color", "Hunger.enabled");
-        addDependency("Hunger.threshold", "Hunger.enabled");
-        addDependency("Hunger.minimumStrength", "Hunger.enabled");
-        addDependency("Hunger.maximumStrength", "Hunger.enabled");
-
-        addDependency("Air.color", "Air.enabled");
-        addDependency("Air.threshold", "Air.enabled");
-        addDependency("Air.minimumStrength", "Air.enabled");
-        addDependency("Air.maximumStrength", "Air.enabled");
-
-        addDependency("Totem.color", "Totem.enabled");
-        addDependency("Totem.condition", "Totem.enabled");
-        addDependency("Totem.strength", "Totem.enabled");
     }
 }
