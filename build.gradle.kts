@@ -43,6 +43,8 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
 
     modImplementation("org.polyfrost.oneconfig:${sc.current.version}-fabric:${property("deps.oneconfig")}")
+
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 }
 
 loom {

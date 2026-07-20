@@ -28,7 +28,8 @@
     "depends": {
         "fabricloader": ">=0.17",
         "minecraft": "${minecraft}",
-        "oneconfigv1": ">=1.0.0"
+        "oneconfigv1": ">=1.0.0",
+        "fabric-api": "*"
     },
     "recommends": {
         "modmenu": "*"
