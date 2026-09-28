@@ -126,12 +126,6 @@ publishMods {
     val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
         ?.asList().orEmpty().map { it.toString() }
 
-    val modrinthToken = listOf(
-        "oneconfig.publish.modrinth.token",
-        "publish.modrinth.token",
-        "modrinth.token"
-    ).firstNotNullOfOrNull { findProperty(it)?.toString()?.takeIf(String::isNotBlank) }
-
     val changelogText = rootProject.file("CHANGELOG.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
 
     file = loomx.modJar.get().archiveFile
@@ -149,7 +143,7 @@ publishMods {
 
     modrinth {
         projectId = property("publish.modrinth").toString()
-        accessToken = modrinthToken
+        accessToken = property("publish.modrinth.token").toString()
         minecraftVersions.addAll(compatibleVersions)
 
         requires("oneconfig")
