@@ -1,3 +1,2 @@
-## 2.0.0
-- Added icon to config
-- Added modmenu integration
+## 2.0.1
+- Added support for Minecraft 26.3

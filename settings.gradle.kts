@@ -26,7 +26,8 @@ stonecutter {
         )
         version("26.1", "26.1")
         version("26.2", "26.2")
-        vcsVersion = "26.2"
+        version("26.3", "26.3")
+        vcsVersion = "26.3"
     }
 }
 
