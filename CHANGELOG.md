@@ -1,2 +1,2 @@
-## 2.0.1
-- Added support for Minecraft 26.3
+## 2.0.2
+- Now Supports 1.8.9!

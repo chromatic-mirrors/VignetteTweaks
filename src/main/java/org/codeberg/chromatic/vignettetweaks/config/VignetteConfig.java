@@ -1,6 +1,7 @@
 package org.codeberg.chromatic.vignettetweaks.config;
 
 import net.minecraft.world.entity.player.Player;
+//? if >1.8.9
 import net.minecraft.world.item.Items;
 import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
 import org.codeberg.chromatic.vignettetweaks.VignetteTweaks;
@@ -40,6 +41,7 @@ public class VignetteConfig extends Config {
     )
     public static float strengthMultiplier = 1f;
 
+    //? if >1.8.9 {
     @Accordion(title = "Totem", subcategory = "Status")
     public static class Totem {
         @Include
@@ -78,6 +80,7 @@ public class VignetteConfig extends Config {
             return new VignetteResult(color, strength / 100f);
         }
     }
+    //?}
 
     @Accordion(title = "Air", subcategory = "Status")
     public static class Air {
@@ -101,7 +104,10 @@ public class VignetteConfig extends Config {
         public static int maximumStrength = 100;
 
         public static VignetteResult evaluate(Player player) {
+            //? if >1.8.9 {
             float percent = (player.getAirSupply() / (float) player.getMaxAirSupply()) * 100f;
+            //?} else
+            //float percent = (player.getBreath() / 300f) * 100f;
             return scaled(enabled, color, percent, threshold, minimumStrength, maximumStrength);
         }
     }
@@ -128,7 +134,10 @@ public class VignetteConfig extends Config {
         public static int maximumStrength = 100;
 
         public static VignetteResult evaluate(Player player) {
+            //? if >1.8.9 {
             float percent = (player.getFoodData().getFoodLevel() / 20f) * 100f;
+            //?} else
+            //float percent = (player.getHungerManager().getFoodLevel() / 20f) * 100f;
             return scaled(enabled, color, percent, threshold, minimumStrength, maximumStrength);
         }
     }

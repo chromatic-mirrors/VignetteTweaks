@@ -57,7 +57,9 @@ public class MixinGui {
             //?}
             at = @At(
                     value = "INVOKE",
-                    //? if 1.21.1 {
+                    //? if 1.8.9 {
+                    // target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V",
+                    //?} elif 1.21.1 {
                     // target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V",
                     //?} else {
                     target = "Lnet/minecraft/util/ARGB;colorFromFloat(FFFF)I",
@@ -73,6 +75,7 @@ public class MixinGui {
         best = pick(best, VignetteConfig.Health.evaluate(minecraft.player));
         best = pick(best, VignetteConfig.Hunger.evaluate(minecraft.player));
         best = pick(best, VignetteConfig.Air.evaluate(minecraft.player));
+        //? if >1.8.9
         best = pick(best, VignetteConfig.Totem.evaluate(minecraft.player));
 
         if (best == null || !best.isActive()) return;

@@ -1,13 +1,19 @@
 mod.id = "vignettetweaks"
 mod.name = "VignetteTweaks"
 mod.group = "org.codeberg.chromatic"
-mod.version = "2.0.1"
+mod.version = "2.0.2"
 
 publish.modrinth = "SIRG6coC"
 
 deps.fabric_loader = "0.19.3"
 loomx.loom_version = "1.17-SNAPSHOT"
 deps.oneconfig = "1.2.7"
+
+["1.8.9"]
+mod.mc_compat = "1.8.9"
+mod.mc_releases = ["1.8.9"]
+
+deps.feather_build = "2"
 
 ["1.21.1"]
 mod.mc_compat = "1.21.1"

@@ -1,0 +1,5 @@
+tiny	2	0	intermediary	named
+c	net/minecraft/unmapped/C_97866173	net/minecraft/client/gui/Gui
+c	net/minecraft/unmapped/C_85740840	net/minecraft/client/gui/screens/Screen
+c	net/minecraft/unmapped/C_45510667	net/minecraft/util/Mth
+c	net/minecraft/unmapped/C_40996800	net/minecraft/world/entity/player/Player

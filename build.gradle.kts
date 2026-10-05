@@ -1,14 +1,36 @@
+import net.ornithemc.ploceus.api.PloceusGradleExtensionApi
+
 plugins {
     id("dev.kikugie.loom-back-compat")
+    id("net.fabricmc.fabric-loom-remap") version "1.17-SNAPSHOT" apply false
+    id("ploceus") version "1.17.4" apply false
     id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
+
+val isOrnithe = sc.current.version == "1.8.9"
+val ploceus = if (isOrnithe) {
+    pluginManager.apply("net.fabricmc.fabric-loom-remap")
+    pluginManager.apply("ploceus")
+
+    configurations.configureEach {
+        exclude(group = "org.lwjgl.lwjgl")
+    }
+
+    extensions.getByType<PloceusGradleExtensionApi>().apply {
+        setIntermediaryGeneration(2)
+    }
+} else {
+    null
+}
+val loader = if (isOrnithe) "ornithe" else "fabric"
 
 version = "${property("mod.version")}+${sc.current.version}"
 base.archivesName = property("mod.id") as String
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
-    else -> JavaVersion.VERSION_21
+    sc.current.parsed >= "1.20.5" -> JavaVersion.VERSION_21
+    else -> JavaVersion.VERSION_25
 }
 
 repositories {
@@ -24,6 +46,7 @@ repositories {
 
     strictMaven("https://www.cursemaven.com", "CurseForge", "curse.maven")
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
+    strictMaven("https://maven.cloverclient.com/releases", "CloverClient", "pl.tomgirl")
 
     strictMaven("https://repo.polyfrost.org/releases", "Polyfrost Releases", "org.polyfrost.oneconfig", "org.jetbrains.skiko")
     strictMaven("https://repo.polyfrost.org/snapshots", "Polyfrost Snapshots", "org.polyfrost")
@@ -38,13 +61,24 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${sc.current.version}")
-    loomx.applyMojangMappings()
+    if (isOrnithe) {
+        mappings(ploceus!!.layeredMappings {
+            mappings("net.ornithemc:feather-gen2:${sc.current.version}+build.${sc.properties["deps.feather_build"] as String}:v2") {
+                containsUnpick()
+            }
+            mappings(rootProject.file("mappings/feather-overrides.tiny"))
+        })
+    } else {
+        loomx.applyMojangMappings()
+    }
 
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
 
-    modImplementation("org.polyfrost.oneconfig:${sc.current.version}-fabric:${property("deps.oneconfig")}")
+    modImplementation("org.polyfrost.oneconfig:${sc.current.version}-$loader:${property("deps.oneconfig")}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    if (!isOrnithe) {
+        modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
+    }
 }
 
 loom {
@@ -106,7 +140,11 @@ tasks {
             register("minecraft", "mod.mc_compat")
         }
 
-        filesMatching("fabric.mod.json") { expand(props) }
+        val hasFabricApi = !isOrnithe
+        filesMatching("fabric.mod.json") {
+            expand(props)
+            if (!hasFabricApi) filter { line -> if ("\"fabric-api\"" in line) "" else line }
+        }
 
         val mixinJava = "JAVA_${requiredJava.majorVersion}"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
@@ -139,7 +177,7 @@ publishMods {
         }
     )
 
-    modLoaders.add("fabric")
+    modLoaders.add(loader)
 
     modrinth {
         projectId = property("publish.modrinth").toString()
@@ -147,6 +185,6 @@ publishMods {
         minecraftVersions.addAll(compatibleVersions)
 
         requires("oneconfig")
-        requires("fabric-api")
+        if (!isOrnithe) requires("fabric-api")
     }
 }
