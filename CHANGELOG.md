@@ -1,2 +1,2 @@
-## 2.0.2
-- Now Supports 1.8.9!
+## 2.0.3
+- Render vignette on fast graphics
