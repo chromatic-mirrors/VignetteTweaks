@@ -5,6 +5,8 @@ import net.minecraft.util.Mth;
 import org.codeberg.chromatic.vignettetweaks.util.ColorUtil;
 import org.codeberg.chromatic.vignettetweaks.config.VignetteConfig;
 import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
+//? if < 1.21.11
+// import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,6 +27,18 @@ public class MixinGui {
     @Shadow
     @Final
     private Minecraft minecraft;
+
+    //? if 1.8.9 {
+    // @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isFancyGraphicsEnabled()Z"))
+    // private boolean renderOnFastGraphics(boolean original) {
+    //     return true;
+    // }
+    //?} elif < 1.21.11 {
+    // @ModifyExpressionValue(method = "renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;useFancyGraphics()Z"))
+    // private boolean renderOnFastGraphics(boolean original) {
+    //     return true;
+    // }
+    //?}
 
     @Redirect(
             //? if >= 26.1 {
