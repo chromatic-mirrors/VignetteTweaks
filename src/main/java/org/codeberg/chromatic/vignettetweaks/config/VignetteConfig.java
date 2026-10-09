@@ -14,6 +14,9 @@ public class VignetteConfig extends Config {
 
     public static final VignetteConfig INSTANCE = new VignetteConfig();
 
+    @Switch(title = "Enabled")
+    public static boolean enabled = true;
+
     @Dropdown(
             title = "Type",
             options = { "Static", "Amplified" }

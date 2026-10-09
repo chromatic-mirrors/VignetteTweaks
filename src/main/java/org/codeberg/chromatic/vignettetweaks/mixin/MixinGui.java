@@ -1,19 +1,19 @@
 package org.codeberg.chromatic.vignettetweaks.mixin;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import org.codeberg.chromatic.vignettetweaks.util.ColorUtil;
 import org.codeberg.chromatic.vignettetweaks.config.VignetteConfig;
 import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
 //? if < 1.21.11
 // import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 //? if < 26.2 {
@@ -31,16 +31,16 @@ public class MixinGui {
     //? if 1.8.9 {
     // @ModifyExpressionValue(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isFancyGraphicsEnabled()Z"))
     // private boolean renderOnFastGraphics(boolean original) {
-    //     return true;
+    //     return original || VignetteConfig.enabled;
     // }
     //?} elif < 1.21.11 {
     // @ModifyExpressionValue(method = "renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;useFancyGraphics()Z"))
     // private boolean renderOnFastGraphics(boolean original) {
-    //     return true;
+    //     return original || VignetteConfig.enabled;
     // }
     //?}
 
-    @Redirect(
+    @WrapOperation(
             //? if >= 26.1 {
             method = "extractVignette",
             //?} else {
@@ -51,16 +51,18 @@ public class MixinGui {
                     target = "Lnet/minecraft/util/Mth;clamp(FFF)F"
             )
     )
-    private float setStrength(float value, float min, float max) {
-        if (VignetteConfig.type != 1) {
-            min = max = VignetteConfig.strength / 100f;
-        } else {
-            value *= VignetteConfig.strengthMultiplier;
-            min = VignetteConfig.minimumStrength / 100f;
-            max = VignetteConfig.maximumStrength / 100f;
+    private float setStrength(float value, float min, float max, Operation<Float> original) {
+        if (VignetteConfig.enabled) {
+            if (VignetteConfig.type != 1) {
+                min = max = VignetteConfig.strength / 100f;
+            } else {
+                value *= VignetteConfig.strengthMultiplier;
+                min = VignetteConfig.minimumStrength / 100f;
+                max = VignetteConfig.maximumStrength / 100f;
+            }
         }
 
-        return Mth.clamp(value, min, max);
+        return original.call(value, min, max);
     }
 
     @ModifyArgs(
@@ -82,7 +84,7 @@ public class MixinGui {
             )
     )
     private void setColor(Args args) {
-        if (minecraft.player == null) return;
+        if (!VignetteConfig.enabled || minecraft.player == null) return;
 
         VignetteResult best = null;
 
