@@ -1,2 +1,2 @@
-## 2.1.0
-- Add an Enabled switch to turn the mod off
+## 2.1.1
+- Layer status vignette over vanilla vignette making it visually stronger
