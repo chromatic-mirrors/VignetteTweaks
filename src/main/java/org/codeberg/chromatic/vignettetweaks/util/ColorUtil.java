@@ -2,8 +2,7 @@ package org.codeberg.chromatic.vignettetweaks.util;
 
 
 public class ColorUtil {
-    public static float invert(float base, float scale, float original) {
-        if (scale <= 0f) return original;
+    public static float invert(float base, float scale) {
         return (1f - base) * scale;
     }
 

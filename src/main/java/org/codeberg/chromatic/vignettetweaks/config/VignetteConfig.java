@@ -52,7 +52,7 @@ public class VignetteConfig extends Config {
 
         @DependsOn("Totem.enabled")
         @Color(title = "Color", alpha = false)
-        public static PolyColor color = new PolyColor(0xFFA05B23);
+        public static PolyColor color = new PolyColor(0xFFFF7200);
 
         @DependsOn("Totem.enabled")
         @Dropdown(
@@ -92,7 +92,7 @@ public class VignetteConfig extends Config {
 
         @DependsOn("Air.enabled")
         @Color(title = "Color", alpha = false)
-        public static PolyColor color = new PolyColor(0xFF142D5E);
+        public static PolyColor color = new PolyColor(0xFF0056FF);
 
         @DependsOn("Air.enabled")
         @Slider(title = "Threshold")
@@ -122,7 +122,7 @@ public class VignetteConfig extends Config {
 
         @DependsOn("Hunger.enabled")
         @Color(title = "Color", alpha = false)
-        public static PolyColor color = new PolyColor(0xFF587653);
+        public static PolyColor color = new PolyColor(0xFF24FF00);
 
         @DependsOn("Hunger.enabled")
         @Slider(title = "Threshold")
@@ -152,7 +152,7 @@ public class VignetteConfig extends Config {
 
         @DependsOn("Health.enabled")
         @Color(title = "Color", alpha = false)
-        public static PolyColor color = new PolyColor(0xFFBB1313);
+        public static PolyColor color = new PolyColor(0xFFFF0000);
 
         @DependsOn("Health.enabled")
         @Slider(title = "Threshold")
