@@ -1,2 +1,2 @@
-## 2.1.1
-- Layer status vignette over vanilla vignette making it visually stronger
+## 2.1.2
+- Render vignette when Vanilla vignette option is off (26.3)
