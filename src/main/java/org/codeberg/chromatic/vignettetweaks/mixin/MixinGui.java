@@ -4,8 +4,7 @@ import net.minecraft.client.Minecraft;
 import org.codeberg.chromatic.vignettetweaks.util.ColorUtil;
 import org.codeberg.chromatic.vignettetweaks.config.VignetteConfig;
 import org.codeberg.chromatic.vignettetweaks.util.VignetteResult;
-//? if < 1.21.11
-// import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Final;
@@ -14,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.resources.Identifier;
 //? if 1.8.9 {
@@ -65,6 +65,19 @@ public class MixinGui {
     // private boolean renderOnFastGraphics(boolean original) {
     //     return original || VignetteConfig.enabled;
     // }
+    //?} else {
+    @ModifyExpressionValue(
+            //? if >= 26.1 {
+            method = "extractCameraOverlays",
+            //?} else {
+            // method = "renderCameraOverlays",
+            //?}
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;", ordinal = 0),
+            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;vignette()Lnet/minecraft/client/OptionInstance;"))
+    )
+    private Object renderWhenVignetteOptionOff(Object original) {
+        return (Boolean) original || VignetteConfig.enabled;
+    }
     //?}
 
     @WrapOperation(
